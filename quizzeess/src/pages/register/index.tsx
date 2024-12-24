@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/config/supabase";
-import { randomUUID } from "crypto";
 import { v4 as uuidv4 } from "uuid";
+import { useToast } from "@/hooks/use-toast";
 
 const schema = z
   .object({
@@ -49,6 +49,7 @@ const schema = z
 type TFormData = z.infer<typeof schema>;
 
 const Register = () => {
+  const { toast } = useToast();
   const [file, setFile] = useState<File>();
 
   const form = useForm<TFormData>({
@@ -66,6 +67,7 @@ const Register = () => {
 
   const handleRegister = async (data: TFormData) => {
     console.log(data);
+    const uuid = uuidv4();
     if (!file) {
       form.setError("image", {
         type: "custom",
@@ -76,41 +78,50 @@ const Register = () => {
 
     const { data: dataSupabase, error } = await supabase.storage
       .from("images")
-      .upload(`user/${uuidv4()}`, file, {
+      .upload(`user/${uuid}`, file, {
         upsert: false,
       });
 
     if (error) {
-      console.log("Erro ao enviar a imagem!");
+      toast({
+        title: "Erro ao enviar a imagem!",
+        variant: "destructive",
+      });
       return;
     }
 
-    console.log(dataSupabase.fullPath);
+    console.log(data);
   };
 
   return (
-    <div className="flex">
-      <div className="hidden relative w-2/4  h-screen lg:flex justify-end items-center">
-        <div className="absolute max-w-[600px] w-full bg-[#AFB3FF] h-3/4 rounded-b-[200px] top-0 left-32 z-10 shadow-sm" />
-        <div className="absolute left-7 -top-10 max-w-[600px] w-full bg-[#656ED3] h-3/4 rounded-b-full z-0 border-transparent rotate-6 " />
+    <div className="flex max-w-[2000px]">
+      <div className="hidden relative w-2/4  h-screen lg:flex justify-end items-center xl:left-14">
+        <div className="absolute lg:max-w-[300px] xl:max-w-[600px] w-full bg-[#AFB3FF] h-3/4 rounded-b-[200px] top-0 left-32 z-10 shadow-sm" />
+        <div className="absolute left-7 -top-10 lg:max-w-[300px] xl:max-w-[600px] w-full bg-[#656ED3] h-3/4 rounded-b-full z-0 border-transparent rotate-6 " />
         <Image
           src={computer}
           alt="Computador"
           priority
-          className="aspect-square h-[700px] max-w-[700px] w-full relative  z-20"
+          className="aspect-square xl:h-[700px] xl:max-w-[700px] w-full relative z-20 pointer-events-none"
         />
       </div>
-      <div className="relative z-40 w-2/4 flex flex-col items-center">
-        <div className="flex items-center">
-          <Image src={logo} alt="logo" className="w-full max-w-64 " />
-          <h1 className="text-lg lg:text-3xl text-[#656ED3]">Cadastre-se</h1>
+      <div className="relative z-40 w-full p-11 lg:p-0 lg:w-2/4 flex flex-col lg:mt-10 justify-center lg:justify-start lg:items-center lg:gap-14">
+        <div className="flex flex-row-reverse lg:flex-row justify-between  gap-16 items-center ">
+          <Image
+            src={logo}
+            alt="logo"
+            className="w-full max-w-16 xl:max-w-24 pointer-events-none"
+          />
+          <h1 className="text-lg lg:text-lg xl:text-3xl text-[#656ED3]">
+            Cadastre-se
+          </h1>
         </div>
         <Form {...form}>
           <form
             className="flex flex-col gap-3"
             onSubmit={form.handleSubmit(handleRegister)}
           >
-            <div className="flex gap-2">
+            <div className="flex flex-col lg:flex-row gap-2">
               <FormField
                 name="fullName"
                 control={form.control}
@@ -130,7 +141,7 @@ const Register = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>username:</FormLabel>
+                    <FormLabel>Nome de usuário:</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -142,7 +153,7 @@ const Register = () => {
                 )}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col lg:flex-row gap-2">
               <FormField
                 name="birthDate"
                 control={form.control}
@@ -191,7 +202,7 @@ const Register = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>foto de perfil:</FormLabel>
+                  <FormLabel>Foto de perfil:</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -237,7 +248,7 @@ const Register = () => {
                     <Input
                       {...field}
                       type="password"
-                      placeholder="digite sua senha novamente"
+                      placeholder="Digite sua senha novamente"
                     />
                   </FormControl>
                   <FormMessage />
