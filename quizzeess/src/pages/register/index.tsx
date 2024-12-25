@@ -255,9 +255,7 @@ const Register = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="bg-[#656ED3]">
-              Cadastrar
-            </Button>
+            <Button type="submit">Cadastrar</Button>
           </form>
         </Form>
       </div>
