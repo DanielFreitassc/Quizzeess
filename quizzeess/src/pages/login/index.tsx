@@ -13,6 +13,7 @@ import { z } from "zod";
 import computer from "../../../public/loginComputer.svg";
 import { Input } from "@/components/ui/input";
 import logo from "../../../public/logo.svg";
+import { useRouter } from "next/router";
 
 const schema = z.object({
   username: z.string().min(1, "Campo obrigatório"),
@@ -22,6 +23,8 @@ const schema = z.object({
 type TFormData = z.infer<typeof schema>;
 
 const Login = () => {
+  const { push } = useRouter();
+
   const form = useForm<TFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -75,7 +78,13 @@ const Login = () => {
               <Button type="submit">Entrar</Button>
               <div className="flex items-center justify-center">
                 <span className="text-sm">Não tem conta?</span>
-                <Button variant="link">Cadastra-se</Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => push("/register")}
+                >
+                  Cadastra-se
+                </Button>
               </div>
             </div>
           </form>
@@ -86,6 +95,7 @@ const Login = () => {
           src={computer}
           alt="computador"
           className="absolute inset-0 m-auto"
+          priority
         />
         <div className="h-screen w-2/4"></div>
         <div className="bg-primary h-screen w-2/4"></div>
