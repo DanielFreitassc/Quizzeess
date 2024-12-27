@@ -1,3 +1,5 @@
+import { Header } from "@/components/Layout/Header";
+import { Hero } from "@/components/page/Home/Hero";
 import { Carousel } from "@/components/ui/carousel";
 import { getAllQuiz } from "@/services/quiz/get-all-quiz";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +14,12 @@ const Home = () => {
   return (
     <div>
       {isLoading && <p>loading...</p>}
-      <Carousel></Carousel>
+      {data && !isLoading && (
+        <div>
+          <Header />
+          <Hero data={data} />
+        </div>
+      )}
     </div>
   );
 };
