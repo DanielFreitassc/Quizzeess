@@ -7,7 +7,7 @@ export const Header = () => {
   const { push } = useRouter();
 
   return (
-    <header className="sticky flex justify-between items-center w-full h-24 bg-primary px-20">
+    <header className="sticky top-0 z-10 flex justify-between items-center w-full h-24 bg-primary px-20 shadow-xl">
       <div>
         <Image src={logo} alt="logo" width={60} height={60} />
       </div>
