@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { alternativeLetterGenerate } from "@/utils/fuctions";
 import { TQuiz } from "@/utils/schemas/create-quiz.schema";
 import { Plus } from "lucide-react";
-import { useEffect } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 export const NestedAlternative = ({
@@ -10,7 +10,7 @@ export const NestedAlternative = ({
 }: {
   questionIndex: number;
 }) => {
-  const { control, setError } = useFormContext<TQuiz>();
+  const { control, setError, register, setValue } = useFormContext<TQuiz>();
 
   const {
     append: alternativeAppend,
@@ -39,21 +39,36 @@ export const NestedAlternative = ({
     });
   };
 
+  const setALternativeLetter = (alternativeIndex: number) => {
+    setValue(
+      `questions.${questionIndex}.alternative.${alternativeIndex}.alternativeLetter`,
+      alternativeLetterGenerate(alternativeIndex)
+    );
+  };
+
   return (
     <div>
-      {alternativeArray.map(({ id, body, alternativeLetter }, i) => (
-        <div key={id}>
-          <span>
-            {alternativeLetterGenerate(i)}) {body}
-          </span>
+      {alternativeArray.map(({ id }, i) => {
+        setALternativeLetter(i);
+        return (
+          <div key={id}>
+            <span>{alternativeLetterGenerate(i)})</span>
+            <Input
+              {...register(`questions.${questionIndex}.alternative.${i}.body`)}
+            />
+            <Button onClick={() => alternativeRemove(i)}>Deletar</Button>
+          </div>
+        );
+      })}
+
+      {alternativeArray.length < 5 && (
+        <div>
+          <Button type="button" onClick={arrayLengthVerify}>
+            Adicionar alternativa
+            <Plus />
+          </Button>
         </div>
-      ))}
-      <div>
-        <Button type="button" onClick={arrayLengthVerify}>
-          Adicionar alternativa
-          <Plus />
-        </Button>
-      </div>
+      )}
     </div>
   );
 };

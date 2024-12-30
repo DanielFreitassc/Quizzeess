@@ -1,4 +1,5 @@
 import { NestedAlternative } from "@/components/page/CreateQuiz/NestedAlternative";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,11 +18,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { quizSchema, TQuiz } from "@/utils/schemas/create-quiz.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 
 const CreateQuiz = () => {
+  const { toast } = useToast();
   const form = useForm<TQuiz>({
     resolver: zodResolver(quizSchema),
     defaultValues: {
@@ -32,6 +36,7 @@ const CreateQuiz = () => {
       questions: [
         {
           statement: "Exemplo de questão",
+          correctAlternative: "",
           alternative: [
             { alternativeLetter: "a", body: "Exemplo 1" },
             { alternativeLetter: "b", body: "Exemplo 2" },
@@ -50,12 +55,25 @@ const CreateQuiz = () => {
     control: form.control,
   });
 
+  const handleCreateQuestion = (data: TQuiz) => {
+    console.log("submitted", data);
+  };
+
+  console.log(form.formState.errors);
+
+  useEffect(() => {
+    if (form.formState.errors.root?.message)
+      toast({
+        title: form.formState.errors.root.message,
+      });
+  }, [form.formState.errors, toast]);
+
   return (
     <div>
       <h1>Crie seu próprio quiz!</h1>
       <FormProvider {...form}>
         <Form {...form}>
-          <form>
+          <form onClick={form.handleSubmit(handleCreateQuestion)}>
             <FormField
               name="name"
               control={form.control}
@@ -109,7 +127,10 @@ const CreateQuiz = () => {
                 <FormItem>
                   <FormLabel>Categoria:</FormLabel>
                   <FormControl>
-                    <Select onOpenChange={field.onChange} value={field.value}>
+                    <Select
+                      value={field.value} // Liga o valor ao campo do formulário
+                      onValueChange={field.onChange} // Atualiza o valor do formulário ao selecionar uma opção
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
@@ -126,17 +147,36 @@ const CreateQuiz = () => {
             />
 
             <div>
-              {questionsArray.map(
-                ({ correctAlternative, id, statement }, i) => (
-                  <div key={id}>
-                    <span>
-                      {i + 1}){statement}
-                    </span>
-                    <NestedAlternative questionIndex={i} />
-                  </div>
-                )
-              )}
+              {questionsArray.map(({ id }, i) => (
+                <div key={id}>
+                  <span>
+                    {i + 1}){" "}
+                    <Input {...form.register(`questions.${i}.statement`)} />
+                  </span>
+                  <NestedAlternative questionIndex={i} />
+                  <Button type="button" onClick={() => questionsRemove(i)}>
+                    Deletar questão
+                  </Button>
+                  {form.formState.errors?.questions?.[i]?.message && (
+                    <p>{form.formState.errors.questions[i].message}</p>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                onClick={() =>
+                  questionsAppend({
+                    statement: `Nova questão`,
+                    alternative: [],
+                    correctAlternative: "",
+                  })
+                }
+              >
+                Adicionar questão
+              </Button>
             </div>
+
+            <Button>Criar</Button>
           </form>
         </Form>
       </FormProvider>

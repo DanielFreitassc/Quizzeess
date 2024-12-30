@@ -10,5 +10,8 @@ export const alternativeLetterGenerate = (index: number) => {
       return "D";
     case 4:
       return "E";
+
+    default:
+      return "";
   }
 };

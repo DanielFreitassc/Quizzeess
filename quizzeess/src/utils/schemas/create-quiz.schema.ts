@@ -12,7 +12,7 @@ const questionsSchema = z
     z.object({
       statement: z.string().min(1, "Campo obrigatório"),
       alternative: alternativeSchema,
-      correctAlternative: z.string().min(1, "Campo obrigatório"),
+      correctAlternative: z.string().optional(),
     })
   )
   .min(5, "Deve conter ao menos 5 questões");
@@ -23,7 +23,7 @@ export const quizSchema = z.object({
     .string()
     .min(1, "Campo obrigatório")
     .max(200, "Maximo de 200 caracteres"),
-  image: z.string().min(1, "Campo obrigatório"),
+  image: z.string(),
   category: z.string().min(1, "Campo obrigatório"),
   questions: questionsSchema,
 });
