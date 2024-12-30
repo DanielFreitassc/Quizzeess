@@ -47,11 +47,11 @@ export const NestedAlternative = ({
   };
 
   return (
-    <div>
+    <div className="bg-white p-2 flex flex-col gap-2">
       {alternativeArray.map(({ id }, i) => {
         setALternativeLetter(i);
         return (
-          <div key={id}>
+          <div key={id} className="flex gap-3">
             <span>{alternativeLetterGenerate(i)})</span>
             <Input
               {...register(`questions.${questionIndex}.alternative.${i}.body`)}

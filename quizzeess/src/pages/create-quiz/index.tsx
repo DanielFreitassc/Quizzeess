@@ -73,7 +73,10 @@ const CreateQuiz = () => {
       <h1>Crie seu próprio quiz!</h1>
       <FormProvider {...form}>
         <Form {...form}>
-          <form onClick={form.handleSubmit(handleCreateQuestion)}>
+          <form
+            onClick={form.handleSubmit(handleCreateQuestion)}
+            className="flex flex-col gap-5"
+          >
             <FormField
               name="name"
               control={form.control}
@@ -127,10 +130,7 @@ const CreateQuiz = () => {
                 <FormItem>
                   <FormLabel>Categoria:</FormLabel>
                   <FormControl>
-                    <Select
-                      value={field.value} // Liga o valor ao campo do formulário
-                      onValueChange={field.onChange} // Atualiza o valor do formulário ao selecionar uma opção
-                    >
+                    <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
@@ -146,14 +146,14 @@ const CreateQuiz = () => {
               )}
             />
 
-            <div>
+            <div className="flex flex-col gap-4 p-4 border bg-white">
               {questionsArray.map(({ id }, i) => (
                 <div key={id}>
-                  <span>
+                  <span className="flex gap-4 px-2">
                     {i + 1}){" "}
                     <Input {...form.register(`questions.${i}.statement`)} />
                   </span>
-                  <NestedAlternative questionIndex={i} />
+                  <NestedAlternative questionIndex={i} key={i} />
                   <Button type="button" onClick={() => questionsRemove(i)}>
                     Deletar questão
                   </Button>
