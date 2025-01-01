@@ -9,8 +9,8 @@
 **Request Body:**
 ```json
 {
-    "fullName": "Daniel Freitas",
-    "username": "dan3",
+    "fullName": "Fulano de Tal",
+    "username": "fulano03",
     "image": "foto",
     "password": "Senha12345",
     "language": "PORTUGUESE",
@@ -24,8 +24,8 @@
 ```json
 {
     "id": 2,
-    "fullName": "Daniel Freitas",
-    "username": "dan3",
+    "fullName": "Fulano de Tal",
+    "username": "fulano03",
     "image": "foto",
     "birthDate": "2003-02-07",
     "language": "PORTUGUESE"
@@ -55,8 +55,8 @@ GET /user?page=0&size=10
     "content": [
         {
             "id": 2,
-            "fullName": "Daniel Freitas",
-            "username": "dan3",
+            "fullName": "Fulano de Tal",
+            "username": "fulano03",
             "image": "foto",
             "birthDate": "2003-02-07",
             "language": "PORTUGUESE"
@@ -118,8 +118,8 @@ GET /user/2
 ```json
 {
     "id": 2,
-    "fullName": "Daniel Freitas",
-    "username": "dan3",
+    "fullName": "Fulano de Tal",
+    "username": "fulano03",
     "image": "foto",
     "birthDate": "2003-02-07",
     "language": "PORTUGUESE"
@@ -135,7 +135,7 @@ GET /user/2
 **Request Body:**
 ```json
 {
-    "username": "dan3",
+    "username": "fulano03",
     "password": "Senha12345"
 }
 ```
@@ -169,8 +169,8 @@ DELETE /user/2
 ```json
 {
     "id": 2,
-    "fullName": "Daniel Freitas",
-    "username": "dan3",
+    "fullName": "Fulano de Tal",
+    "username": "fulano03",
     "image": "foto",
     "birthDate": "2003-02-07",
     "language": "PORTUGUESE"
