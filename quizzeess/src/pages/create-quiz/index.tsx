@@ -1,7 +1,6 @@
 import { NestedAlternative } from "@/components/page/CreateQuiz/NestedAlternative";
 import { Button } from "@/components/ui/button";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -35,11 +34,11 @@ const CreateQuiz = () => {
       name: "",
       questions: [
         {
-          statement: "Exemplo de questão",
+          statement: "Exemplo de enunciado da questão",
           correctAlternative: "",
           alternative: [
-            { alternativeLetter: "a", body: "Exemplo 1" },
-            { alternativeLetter: "b", body: "Exemplo 2" },
+            { alternativeLetter: "A", body: "Exemplo 1 de alternativa" },
+            { alternativeLetter: "B", body: "Exemplo 2 de alternativa" },
           ],
         },
       ],
@@ -62,9 +61,10 @@ const CreateQuiz = () => {
   console.log(form.formState.errors);
 
   useEffect(() => {
-    if (form.formState.errors.root?.message)
+    if (form.formState.errors.questions?.root?.message)
       toast({
-        title: form.formState.errors.root.message,
+        title: form.formState.errors.questions?.root?.message,
+        variant: "destructive",
       });
   }, [form.formState.errors, toast]);
 
@@ -72,11 +72,11 @@ const CreateQuiz = () => {
     <div>
       <h1>Crie seu próprio quiz!</h1>
       <FormProvider {...form}>
-        <Form {...form}>
-          <form
-            onClick={form.handleSubmit(handleCreateQuestion)}
-            className="flex flex-col gap-5"
-          >
+        <form
+          onSubmit={form.handleSubmit(handleCreateQuestion)}
+          className="flex flex-col gap-5 p-4"
+        >
+          <div className="flex flex-col gap-3 bg-white p-4 rounded-md">
             <FormField
               name="name"
               control={form.control}
@@ -108,77 +108,97 @@ const CreateQuiz = () => {
                 </FormItem>
               )}
             />
+            <div className="flex gap-4 w-full">
+              <FormField
+                name="image"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Foto de apresentação:</FormLabel>
+                    <FormControl>
+                      <Input type="file" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              name="image"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Foto de apresentação:</FormLabel>
-                  <FormControl>
-                    <Input type="file" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="category"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria:</FormLabel>
-                  <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="teste">Teste</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex flex-col gap-4 p-4 border bg-white">
-              {questionsArray.map(({ id }, i) => (
-                <div key={id}>
-                  <span className="flex gap-4 px-2">
-                    {i + 1}){" "}
-                    <Input {...form.register(`questions.${i}.statement`)} />
-                  </span>
-                  <NestedAlternative questionIndex={i} key={i} />
-                  <Button type="button" onClick={() => questionsRemove(i)}>
-                    Deletar questão
-                  </Button>
-                  {form.formState.errors?.questions?.[i]?.message && (
-                    <p>{form.formState.errors.questions[i].message}</p>
-                  )}
-                </div>
-              ))}
-              <Button
-                type="button"
-                onClick={() =>
-                  questionsAppend({
-                    statement: `Nova questão`,
-                    alternative: [],
-                    correctAlternative: "",
-                  })
-                }
-              >
-                Adicionar questão
-              </Button>
+              <FormField
+                name="category"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Categoria:</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="teste">Teste</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+          </div>
 
-            <Button>Criar</Button>
-          </form>
-        </Form>
+          <div className="flex flex-col gap-4">
+            {questionsArray.map(({ id }, i) => (
+              <div
+                key={id}
+                className="flex flex-col gap-4 p-4 bg-white rounded-md"
+              >
+                <Button type="button" onClick={() => questionsRemove(i)}>
+                  Deletar questão
+                </Button>
+                <FormField
+                  name={`questions.${i}.statement`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <span className="flex gap-4 px-2 items-center">
+                          {i + 1}) <Input {...field} />
+                        </span>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <NestedAlternative questionIndex={i} />
+                {form.formState.errors?.questions?.[i]?.message && (
+                  <p>{form.formState.errors.questions[i].message}</p>
+                )}
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            onClick={() =>
+              questionsAppend({
+                statement: `Nova questão`,
+                alternative: [
+                  { alternativeLetter: "A", body: "Exemplo 1 de alternativa" },
+                  { alternativeLetter: "B", body: "Exemplo 2 de alternativa" },
+                ],
+                correctAlternative: "",
+              })
+            }
+          >
+            Adicionar questão
+          </Button>
+
+          <Button>Criar quiz</Button>
+        </form>
       </FormProvider>
     </div>
   );

@@ -1,4 +1,10 @@
 import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { alternativeLetterGenerate } from "@/utils/fuctions";
 import { TQuiz } from "@/utils/schemas/create-quiz.schema";
@@ -10,7 +16,12 @@ export const NestedAlternative = ({
 }: {
   questionIndex: number;
 }) => {
-  const { control, setError, register, setValue } = useFormContext<TQuiz>();
+  const {
+    control,
+    setError,
+    setValue,
+    formState: { errors },
+  } = useFormContext<TQuiz>();
 
   const {
     append: alternativeAppend,
@@ -50,23 +61,61 @@ export const NestedAlternative = ({
     <div className="bg-white p-2 flex flex-col gap-2">
       {alternativeArray.map(({ id }, i) => {
         setALternativeLetter(i);
+        const letter = alternativeLetterGenerate(i);
         return (
-          <div key={id} className="flex gap-3">
-            <span>{alternativeLetterGenerate(i)})</span>
-            <Input
-              {...register(`questions.${questionIndex}.alternative.${i}.body`)}
-            />
-            <Button onClick={() => alternativeRemove(i)}>Deletar</Button>
-          </div>
+          <FormField
+            key={id}
+            name={`questions.${questionIndex}.alternative.${i}.body`}
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <Input
+                        type="radio"
+                        value={letter}
+                        name={`question${questionIndex}`}
+                        onChange={(evt) => {
+                          console.log(evt.target.value);
+
+                          setValue(
+                            `questions.${questionIndex}.correctAlternative`,
+                            evt.target.value
+                          );
+                        }}
+                      />
+                    </div>
+                    <span>{letter})</span>
+                    <Input {...field} />
+                    <Button onClick={() => alternativeRemove(i)}>
+                      Deletar
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         );
       })}
-
       {alternativeArray.length < 5 && (
-        <div>
+        <div className="flex items-center gap-5">
           <Button type="button" onClick={arrayLengthVerify}>
             Adicionar alternativa
             <Plus />
           </Button>
+
+          {errors.questions?.[questionIndex]?.alternative?.root?.message && (
+            <p className="text-xs text-[#ef4444]">
+              {errors.questions[questionIndex].alternative.root.message}
+            </p>
+          )}
+          {errors.questions?.[questionIndex]?.correctAlternative?.message && (
+            <p className="text-xs text-[#ef4444]">
+              {errors.questions[questionIndex].correctAlternative.message}
+            </p>
+          )}
         </div>
       )}
     </div>
