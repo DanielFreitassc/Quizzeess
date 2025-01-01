@@ -195,11 +195,3 @@ DELETE /user/2
 
 ---
 
-## Authorization
-
-All endpoints, except `/auth/login`, require a Bearer token for authorization. The token is returned in the response of the `/auth/login` endpoint and must be included in the `Authorization` header of subsequent requests:
-
-```
-Authorization: Bearer <token>
-```
-
