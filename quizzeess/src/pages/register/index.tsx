@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/config/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { useToast } from "@/hooks/use-toast";
+import { registerAPI } from "@/services/auth/register";
 
 const schema = z
   .object({
@@ -46,13 +47,13 @@ const schema = z
     }
   });
 
-type TFormData = z.infer<typeof schema>;
+export type IRegister = z.infer<typeof schema>;
 
 const Register = () => {
   const { toast } = useToast();
   const [file, setFile] = useState<File>();
 
-  const form = useForm<TFormData>({
+  const form = useForm<IRegister>({
     resolver: zodResolver(schema),
     defaultValues: {
       birthDate: "",
@@ -65,8 +66,7 @@ const Register = () => {
     },
   });
 
-  const handleRegister = async (data: TFormData) => {
-    console.log(data);
+  const handleRegister = async (data: IRegister) => {
     const uuid = uuidv4();
     if (!file) {
       form.setError("image", {
@@ -90,7 +90,16 @@ const Register = () => {
       return;
     }
 
-    console.log(data);
+    data.image = dataSupabase.path;
+
+    await registerAPI(data)
+      .then(({ data }) => {
+        console.log(data);
+      })
+      .catch(async () => {
+        await supabase.storage.from("images").remove([`user/${uuid}`]);
+        console.log("Erro");
+      });
   };
 
   return (
@@ -255,7 +264,9 @@ const Register = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              Cadastrar
+            </Button>
           </form>
         </Form>
       </div>

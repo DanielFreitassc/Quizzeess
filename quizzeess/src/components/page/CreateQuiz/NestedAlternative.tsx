@@ -77,8 +77,6 @@ export const NestedAlternative = ({
                         value={letter}
                         name={`question${questionIndex}`}
                         onChange={(evt) => {
-                          console.log(evt.target.value);
-
                           setValue(
                             `questions.${questionIndex}.correctAlternative`,
                             evt.target.value

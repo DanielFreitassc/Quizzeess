@@ -55,10 +55,8 @@ const CreateQuiz = () => {
   });
 
   const handleCreateQuestion = (data: TQuiz) => {
-    console.log("submitted", data);
+    console.dir(data);
   };
-
-  console.log(form.formState.errors);
 
   useEffect(() => {
     if (form.formState.errors.questions?.root?.message)
