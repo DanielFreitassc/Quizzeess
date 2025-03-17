@@ -28,26 +28,18 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
 
-                .requestMatchers(HttpMethod.POST,"/user").permitAll()
-                .requestMatchers(HttpMethod.GET,"/user").hasAnyRole("ADMIN","USER")
-                .requestMatchers(HttpMethod.GET,"/user/{id}").hasAnyRole("ADMIN","USER")
-                .requestMatchers(HttpMethod.PATCH,"/user/{id}").hasAnyRole("ADMIN","USER")
-                .requestMatchers(HttpMethod.DELETE,"/user/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.POST,"/users").permitAll()
+                .requestMatchers(HttpMethod.GET,"/users").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/users/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.PATCH,"/users/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.DELETE,"/users/{id}").hasAnyRole("ADMIN","USER")
                                 
-                .requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/h2-console/**").permitAll()
-
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.GET,"/validation").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/validation").permitAll()
                 
-                //Permite o swagger 
-                // .requestMatchers(HttpMethod.GET,"/v3/api-docs/swagger-config").permitAll()
-                // .requestMatchers(HttpMethod.GET,"/v3/api-docs").permitAll()
-                // .requestMatchers(HttpMethod.GET,"/swagger-ui/**").permitAll()
-
                 // Configuração para endpoint de erro
                 .requestMatchers("/error").anonymous()
-                .anyRequest().authenticated()
+                .anyRequest().denyAll()
 
                 ).addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class).build();
     }

@@ -42,7 +42,7 @@ public class UserEntity implements UserDetails{
     private String image;
     private LocalDate birthDate;
     private UserLanguage language;
-    @Length(min = 10, max= 400, message = "A senha deve Conter no mínimo 10 caracteres.")
+    @Length(min = 6, max= 400, message = "A senha deve Conter no mínimo 6 caracteres.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z]).*$", message = "A senha deve conter pelo menos uma letra minúscula e uma letra maiúscula.")
     private String password; 
     private UserRole role;

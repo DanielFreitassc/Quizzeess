@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.danielfreitassc.backend.dtos.user.AdminRequestDTO;
-import com.danielfreitassc.backend.mappers.user.UserMapper;
+import com.danielfreitassc.backend.models.user.UserEntity;
 import com.danielfreitassc.backend.models.user.UserLanguage;
 import com.danielfreitassc.backend.models.user.UserRole;
 import com.danielfreitassc.backend.repositories.user.UserRepository;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class AdminUserInitializer {
-    private  final UserMapper userMapper;
     private final UserRepository userRepository;
     @Value("${admin.username}")
     private String adminUsername;
@@ -38,9 +36,8 @@ public class AdminUserInitializer {
             System.out.println("Erro");
         } else {
             String encryptedPassword =  new BCryptPasswordEncoder().encode(adminPassword);
-            AdminRequestDTO adminUserDTO = new AdminRequestDTO(adminUsername, adminUsername, "foto", birthDate, UserLanguage.PORTUGUESE, encryptedPassword, UserRole.ADMIN);
-            
-            userRepository.save(userMapper.toAdminEntity(adminUserDTO));
+            UserEntity userEntity = new UserEntity(adminUsername, adminUsername, "foto", UserLanguage.PORTUGUESE,birthDate,  encryptedPassword, UserRole.ADMIN);
+            userRepository.save(userEntity);
         }
     }
 }

@@ -25,31 +25,29 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserResponseDto create(UserRequestDto userRequestDto) {
-        if(userRepository.findByUsername(userRequestDto.username()) != null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário já cadatrado");
+        checkDuplicateUsername(userRequestDto.username());
+
         String encryptedPassword =  new BCryptPasswordEncoder().encode(userRequestDto.password());
-        UserEntity userEntity = userRepository.save(userMapper.toEntity(userRequestDto));
+        UserEntity userEntity = userMapper.toEntity(userRequestDto);
+
         userEntity.setRole(UserRole.USER);
         userEntity.setPassword(encryptedPassword);
         return userMapper.toDto(userRepository.save(userEntity));
-        
     }
 
     public Page<UserResponseDto> getAllUsers(Pageable pageable, String search) {
-        Page<UserEntity> users = userRepository.findAll(pageable, search);
-        return users.map(userMapper::toDto);
+        return userRepository.findAll(pageable,search).map(userMapper::toDto);
     }
 
     public UserResponseDto getUserById(Long id) {
-        Optional<UserEntity> user = userRepository.findById(id);
-        if(user.isEmpty()) throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado");
-        return userMapper.toDto(user.get());
+        return userMapper.toDto(findUserOrThrow(id));
     }
     
     public UserResponseDto patchUser(Long id,  UserRequestDto userRequestDto) {
-        Optional<UserEntity> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado;");
+      
         
-        UserEntity userEntity = userOptional.get();
+        UserEntity userEntity = findUserOrThrow(id);
+
         userEntity.setRole(UserRole.USER);
         
         if (userRequestDto.fullName() != null && !userRequestDto.fullName().isBlank()) {
@@ -62,11 +60,11 @@ public class UserService {
             userEntity.setUsername(userRequestDto.username());
         }
         
-        if (userRequestDto.birthDate() != userOptional.get().getBirthDate()) {
+        if (userRequestDto.birthDate() != userEntity.getBirthDate()) {
             userEntity.setBirthDate(userRequestDto.birthDate());
         }
 
-        if (userRequestDto.language() != userOptional.get().getLanguage()) {
+        if (userRequestDto.language() != userEntity.getLanguage()) {
             userEntity.setLanguage(userRequestDto.language());
         }
     
@@ -81,9 +79,22 @@ public class UserService {
 
 
     public UserResponseDto delete(Long id) {
+        userRepository.delete(findUserOrThrow(id));
+        return userMapper.toDto(findUserOrThrow(id));
+    }
+
+
+    // verifica se username já existe
+    private void checkDuplicateUsername(String username) {
+        if(userRepository.findByUsername(username) != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário já cadastrado na base de dados.");
+        }
+    }
+
+    // Busca usuário ou retorna 404
+    private UserEntity findUserOrThrow(Long id) {
         Optional<UserEntity> user = userRepository.findById(id);
-        if(user.isEmpty()) throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado");
-        userRepository.delete(user.get());
-        return userMapper.toDto(user.get());
+        if(user.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado");
+        return user.get();
     }
 }
