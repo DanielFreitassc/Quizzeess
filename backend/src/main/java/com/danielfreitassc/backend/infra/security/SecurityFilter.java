@@ -28,16 +28,12 @@ public class SecurityFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String path = request.getServletPath();
-            boolean isPublicEndpoint = (path.equals("/users") && request.getMethod().equals("POST")) || path.equals("/validation");
+            boolean isPublicEndpoint = (path.equals("/users") && request.getMethod().equals("POST")) 
+                                    || path.equals("/validation");
 
             var token = this.recoverToken(request);
 
-            // Se o token for nulo e o endpoint não exigir autenticação, apenas continue a requisição
-            if (token == null && isPublicEndpoint) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
+            // Se o token estiver presente, valide-o
             if (token != null) {
                 var username = tokenService.validateToken(token);
                 UserDetails user = userRepository.findByUsername(username);
@@ -48,6 +44,12 @@ public class SecurityFilter extends OncePerRequestFilter {
                 } else {
                     throw new RuntimeException("Token inválido");
                 }
+            }
+
+            // Se o endpoint for público e não houver token, permita a requisição
+            if (isPublicEndpoint && token == null) {
+                filterChain.doFilter(request, response);
+                return;
             }
 
             filterChain.doFilter(request, response);
