@@ -29,8 +29,8 @@ public class AdminUserInitializer {
     private String adminPassword;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    LocalDate birthDate = LocalDate.parse("07/02/2003", formatter
-    );
+    LocalDate birthDate = LocalDate.parse("07/02/2003", formatter);
+    
     @PostConstruct
     public void init() {
 
