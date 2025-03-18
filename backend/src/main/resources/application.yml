@@ -48,7 +48,7 @@ bucket4j:
               burst-time: 60
   - cache-name: filterConfigCache
     url: /users
-    filter-order: 200 
+    filter-order: 0 
     rate-limits:
       - execute-condition: "@securityService.isNotAuthenticated()"
         expression: "@ipExtractor.getClientIp(request)"
