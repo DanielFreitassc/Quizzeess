@@ -1,7 +1,6 @@
 package com.danielfreitassc.backend.services.user;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,8 +22,8 @@ public class AuthenticationService {
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
-    public ResponseEntity<Object> login(AuthenticationDTO data) {
-        UserDetails userDetails = userRepository.findByUsername(data.username());
+    public LoginResponseDTO login(AuthenticationDTO authenticationDTO) {
+        UserDetails userDetails = userRepository.findByUsername(authenticationDTO.username());
         if (!(userDetails instanceof UserEntity)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Usuário não encontrado.");
         }
@@ -35,13 +34,13 @@ public class AuthenticationService {
         }
 
         try {
-            var usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
+            var usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.username(), authenticationDTO.password());
             authenticationManager.authenticate(usernamePassword);
             var token = tokenService.generateToken(user);
             user.resetLoginAttempts();
             userRepository.save(user);
 
-            return ResponseEntity.ok(new LoginResponseDTO(token));
+            return new LoginResponseDTO(token);
         } catch (Exception e) {
             user.incrementLoginAttempts();
             if(user.getLoginAttempts() >= 4) {
@@ -49,6 +48,7 @@ public class AuthenticationService {
             }
             userRepository.save(user);
             int remainingAttempts = 4 - user.getLoginAttempts();
+
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Senha incorreta: " + remainingAttempts + " tentativas restantes.");
         }
     }

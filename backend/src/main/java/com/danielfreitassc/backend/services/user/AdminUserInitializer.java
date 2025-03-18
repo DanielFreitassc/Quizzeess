@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.danielfreitassc.backend.models.user.UserEntity;
 import com.danielfreitassc.backend.models.user.UserLanguage;
@@ -33,7 +35,7 @@ public class AdminUserInitializer {
     public void init() {
 
         if(userRepository.findByUsername(adminUsername) != null) {
-            System.out.println("Erro");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Usuário já existe");
         } else {
             String encryptedPassword =  new BCryptPasswordEncoder().encode(adminPassword);
             UserEntity userEntity = new UserEntity(adminUsername, adminUsername, "foto", UserLanguage.PORTUGUESE,birthDate,  encryptedPassword, UserRole.ADMIN);

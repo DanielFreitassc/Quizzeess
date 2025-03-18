@@ -44,8 +44,7 @@ public class UserService {
     }
     
     public UserResponseDto patchUser(Long id,  UserRequestDto userRequestDto) {
-      
-        
+       
         UserEntity userEntity = findUserOrThrow(id);
 
         userEntity.setRole(UserRole.USER);
@@ -73,7 +72,6 @@ public class UserService {
             userEntity.setPassword(encryptedPassword);
         }
         
-
         return userMapper.toDto(userRepository.save(userEntity));
     }
 
