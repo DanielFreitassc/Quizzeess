@@ -37,7 +37,25 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.GET,"/users/{id}").hasAnyRole("ADMIN","USER")
                 .requestMatchers(HttpMethod.PATCH,"/users/{id}").hasAnyRole("ADMIN","USER")
                 .requestMatchers(HttpMethod.DELETE,"/users/{id}").hasAnyRole("ADMIN","USER")
-                                
+                
+                .requestMatchers(HttpMethod.POST,"/quizzes").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/quizzes").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/quizzes/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.PUT,"/quizzes/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.DELETE,"/quizzes/{id}").hasAnyRole("ADMIN","USER")
+                         
+                .requestMatchers(HttpMethod.POST,"/questions").permitAll()
+                .requestMatchers(HttpMethod.GET,"/questions").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/questions/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.PUT,"/questions/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.DELETE,"/questions/{id}").hasAnyRole("ADMIN","USER")
+
+                .requestMatchers(HttpMethod.POST,"/alternatives").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/alternatives").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/alternatives/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.PUT,"/alternatives/{id}").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.DELETE,"/alternatives/{id}").hasAnyRole("ADMIN","USER")
+
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET,"/validation").permitAll()
                 
