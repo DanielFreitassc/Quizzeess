@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.danielfreitassc.backend.dtos.answer.AnswerRequestDto;
-import com.danielfreitassc.backend.dtos.common.MessageResponseDto;
 import com.danielfreitassc.backend.dtos.result.ResultResponseDto;
 import com.danielfreitassc.backend.services.answer.AnswerService;
 
