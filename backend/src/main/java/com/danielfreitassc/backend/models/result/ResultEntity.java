@@ -1,4 +1,4 @@
-package com.danielfreitassc.backend.models.quiz;
+package com.danielfreitassc.backend.models.result;
 
 import java.sql.Timestamp;
 
@@ -22,25 +22,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "answers")
-@Entity(name = "answers")
-public class AnswerEntity {
+@Table(name = "results")
+@Entity(name = "results")
+public class ResultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id",nullable = false)
     private UserEntity userEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "question_id", nullable = false)
-    private QuestionEntity questionEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "alternative_id", nullable = false)
-    private AlternativeEntity alternativeEntity;
-
+    private Long score;
     @CreationTimestamp
-    private Timestamp selectedAt;
+    private Timestamp completedAt;
+
 }

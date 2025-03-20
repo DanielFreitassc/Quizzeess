@@ -13,7 +13,9 @@ import com.danielfreitassc.backend.dtos.alternative.AlternativeResponseDto;
 import com.danielfreitassc.backend.dtos.common.MessageResponseDto;
 import com.danielfreitassc.backend.mappers.alternative.AlternativeMapper;
 import com.danielfreitassc.backend.models.quiz.AlternativeEntity;
+import com.danielfreitassc.backend.models.quiz.QuestionEntity;
 import com.danielfreitassc.backend.repositories.alternative.AlternativeRepository;
+import com.danielfreitassc.backend.repositories.question.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,8 +24,10 @@ import lombok.RequiredArgsConstructor;
 public class AlternativeService {
     private final AlternativeRepository alternativeRepository;
     private final AlternativeMapper alternativeMapper;
+    private final QuestionRepository questionRepository;
 
     public MessageResponseDto create(AlternativeRequestDto alternativeRequestDto) {
+        findQuestionOrThrow(alternativeRequestDto.questionId());
         Character alternativeLetter = alternativeRequestDto.alternativeLetter();
         Long questionId = alternativeRequestDto.questionId();
 
@@ -60,5 +64,11 @@ public class AlternativeService {
         Optional<AlternativeEntity> alternative = alternativeRepository.findById(id);
         if(alternative.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhum alternativa encontra");
         return alternative.get();
+    }
+
+    private QuestionEntity findQuestionOrThrow(Long id) {
+        Optional<QuestionEntity> question = questionRepository.findById(id);
+        if(question.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhuma questão encontrada!");
+        return question.get();
     }
 }

@@ -13,7 +13,9 @@ import com.danielfreitassc.backend.dtos.question.QuestionRequestDto;
 import com.danielfreitassc.backend.dtos.question.QuestionResponseDto;
 import com.danielfreitassc.backend.mappers.question.QuestionMapper;
 import com.danielfreitassc.backend.models.quiz.QuestionEntity;
+import com.danielfreitassc.backend.models.quiz.QuizEntity;
 import com.danielfreitassc.backend.repositories.question.QuestionRepository;
+import com.danielfreitassc.backend.repositories.quiz.QuizRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,8 +24,10 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
+    private final QuizRepository quizRepository;
 
     public MessageResponseDto create(QuestionRequestDto questionRequestDto) {
+        findQuizOrThrow(questionRequestDto.quizId());
         questionRepository.save(questionMapper.toEntity(questionRequestDto));
         return new MessageResponseDto("Questão criada!");
     }
@@ -52,5 +56,11 @@ public class QuestionService {
         Optional<QuestionEntity> question = questionRepository.findById(id);
         if(question.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhuma questão encontrada!");
         return question.get();
+    }
+
+    private QuizEntity findQuizOrThrow(Long id) {
+        Optional<QuizEntity> quiz = quizRepository.findById(id);
+        if(quiz.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Quiz não encontrado!");
+        return quiz.get();
     }
 }
