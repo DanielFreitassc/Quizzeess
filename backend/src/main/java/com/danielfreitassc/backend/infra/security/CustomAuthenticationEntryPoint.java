@@ -16,13 +16,15 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,AuthenticationException authException) throws IOException {
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
         MessageResponseDto errorResponse = new MessageResponseDto("Token inválido ou expirado");
         String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse);
 
         response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 }

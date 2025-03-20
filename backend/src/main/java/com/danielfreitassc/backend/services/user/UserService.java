@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.danielfreitassc.backend.dtos.common.MessageResponseDto;
 import com.danielfreitassc.backend.dtos.user.UserRequestDto;
 import com.danielfreitassc.backend.dtos.user.UserResponseDto;
 import com.danielfreitassc.backend.mappers.user.UserMapper;
@@ -76,9 +77,9 @@ public class UserService {
     }
 
 
-    public UserResponseDto delete(Long id) {
+    public MessageResponseDto delete(Long id) {
         userRepository.delete(findUserOrThrow(id));
-        return userMapper.toDto(findUserOrThrow(id));
+        return new MessageResponseDto("Usuário removido com sucesso!");
     }
 
 

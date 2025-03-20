@@ -24,7 +24,7 @@ public class QuestionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String statement;
-    private char correctAlternative;
+    private Character correctAlternative;
 
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)

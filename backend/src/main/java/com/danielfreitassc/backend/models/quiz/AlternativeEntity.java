@@ -23,7 +23,8 @@ public class AlternativeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private char alternativeLetter;
+    @Column(unique = true)
+    private Character alternativeLetter;
     @Column(columnDefinition = "TEXT")
     private String body;
 

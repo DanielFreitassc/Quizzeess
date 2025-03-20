@@ -13,8 +13,10 @@ public interface QuizMapper {
     QuizResponseDto toDto(QuizEntity quizEntity);
     
     @Mapping(target = "id",ignore = true)
+    @Mapping(target = "createdAt",ignore = true)
     QuizEntity toEntity(QuizRequestDto quizRequestDto);
 
     @Mapping(target = "id",ignore = true)
+    @Mapping(target = "createdAt",ignore = true)
     void toUpdate(QuizRequestDto quizRequestDto, @MappingTarget QuizEntity quizEntity);
 }

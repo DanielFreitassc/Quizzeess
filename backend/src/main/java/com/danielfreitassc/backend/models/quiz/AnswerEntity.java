@@ -34,11 +34,11 @@ public class AnswerEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
     private QuestionEntity questionEntity;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "alternative_id", nullable = false)
     private AlternativeEntity alternativeEntity;
 

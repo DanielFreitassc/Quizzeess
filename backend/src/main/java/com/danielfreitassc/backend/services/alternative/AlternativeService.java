@@ -24,6 +24,14 @@ public class AlternativeService {
     private final AlternativeMapper alternativeMapper;
 
     public MessageResponseDto create(AlternativeRequestDto alternativeRequestDto) {
+        Character alternativeLetter = alternativeRequestDto.alternativeLetter();
+        Long questionId = alternativeRequestDto.questionId();
+
+        // Verifica se já existe uma alternativa com a mesma letra para a mesma pergunta
+        if (alternativeRepository.existsByAlternativeLetterAndQuestionEntity_Id(alternativeLetter, questionId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Alternativa já cadastrada para essa pergunta!");
+        }
+
         alternativeRepository.save(alternativeMapper.toEntity(alternativeRequestDto));
         return new MessageResponseDto("Alternativa criada!");
     }

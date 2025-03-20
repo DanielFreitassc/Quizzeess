@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfigurations {
     private final SecurityFilter securityFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -61,8 +62,9 @@ public class SecurityConfigurations {
                 
                 // Configuração para endpoint de erro
                 .requestMatchers("/error").anonymous()
-                .anyRequest().denyAll()
-
+                .anyRequest().denyAll()) .exceptionHandling(exception -> 
+                exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+            
                 ).addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
