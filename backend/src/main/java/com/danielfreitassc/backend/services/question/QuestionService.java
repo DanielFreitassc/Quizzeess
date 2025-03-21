@@ -1,5 +1,7 @@
 package com.danielfreitassc.backend.services.question;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -37,7 +39,14 @@ public class QuestionService {
     }
 
     public QuestionResponseDto getQuestion(Long id) {
-        return questionMapper.toDto(findQuestionOrThrow(id));
+        QuestionEntity questionEntity = findQuestionOrThrow(id);
+
+        if(questionEntity.getTimer().getTime() == 0) {
+            questionEntity.setTimer(Timestamp.from(Instant.now().plusSeconds(30)));
+        }
+
+        questionRepository.save(questionEntity);
+        return questionMapper.toDto(questionEntity);
     }
 
     public MessageResponseDto updateQuestion(Long id, QuestionRequestDto questionRequestDto) {
@@ -62,5 +71,11 @@ public class QuestionService {
         Optional<QuizEntity> quiz = quizRepository.findById(id);
         if(quiz.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Quiz não encontrado!");
         return quiz.get();
+    }
+
+    public QuestionEntity createAndReturnEntity(QuestionRequestDto questionRequestDto) {
+        findQuizOrThrow(questionRequestDto.quizId());
+        QuestionEntity questionEntity = questionMapper.toEntity(questionRequestDto);
+        return questionRepository.save(questionEntity);
     }
 }

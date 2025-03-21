@@ -1,6 +1,10 @@
 package com.danielfreitassc.backend.services.answer;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.danielfreitassc.backend.dtos.answer.AnswerRequestDto;
+import com.danielfreitassc.backend.dtos.answer.ScoreboardResponseDto;
+import com.danielfreitassc.backend.dtos.common.MessageResponseDto;
 import com.danielfreitassc.backend.dtos.result.ResultRequestDto;
 import com.danielfreitassc.backend.dtos.result.ResultResponseDto;
 import com.danielfreitassc.backend.mappers.answer.AnswerMapper;
@@ -37,32 +43,54 @@ public class AnswerService {
     private final ResultMapper resultMapper;
     private final AnswerMapper answerMapper;
 
-    public ResultResponseDto saveAnswer(AnswerRequestDto answerRequestDto) {
+    public MessageResponseDto saveAnswer(AnswerRequestDto answerRequestDto) {
         UserEntity userEntity = findUserOrThrow(answerRequestDto.userId());
         AlternativeEntity alternativeEntity = findAlternativeOrThrow(answerRequestDto.alternativeId());
         QuestionEntity questionEntity = findQuestionOrThrow(answerRequestDto.questionId());
-    
-        // Verifica se o usuário já respondeu essa questão
+        
+        Instant questionStartTime = questionEntity.getTimer().toInstant();
+        Instant now = Instant.now();
+        long secondsElapsed = Duration.between(questionStartTime, now).getSeconds();
+        if(questionEntity.getTimer().getTime() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Busque a questão antes de respoder ela!");
+        }
+
+        if (secondsElapsed > 30) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tempo para responder essa questão acabou!");
+        }
+
         if (answerRepository.existsByUserEntity_IdAndQuestionEntity_Id(answerRequestDto.userId(), answerRequestDto.questionId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Você já respondeu essa questão!");
         }
     
-        // Salva a resposta do usuário
         AnswerEntity answerEntity = answerMapper.toEntity(answerRequestDto);
         answerRepository.save(answerEntity);
     
-        // Verifica se a alternativa escolhida está correta
         long score = alternativeEntity.getAlternativeLetter().equals(questionEntity.getCorrectAlternative()) ? 10L : 0L;
     
-        // Cria e salva o resultado do usuário
         ResultEntity resultEntity = resultMapper.toEntity(new ResultRequestDto(userEntity.getId(), score));
         resultRepository.save(resultEntity);
     
-        return resultMapper.toDto(resultEntity);
+        return new MessageResponseDto("Questão respondida com suceso!");
     }
 
     public Page<ResultResponseDto> getAnswer(Pageable pageable, Long id) {
         return resultRepository.findByUserEntity_Id(id,pageable).map(resultMapper::toDto); 
+    }
+
+    public List<ScoreboardResponseDto> getScoreboard() {
+        List<ResultEntity> results = resultRepository.findAll();
+
+        return results.stream()
+            .collect(Collectors.groupingBy(result -> result.getUserEntity().getId(), 
+                   Collectors.summingLong(ResultEntity::getScore)))
+            .entrySet().stream()
+            .map(entry -> {
+                UserEntity userEntity = userRepository.findById(entry.getKey())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+                return new ScoreboardResponseDto(userEntity.getUsername(), entry.getValue());
+            })
+            .collect(Collectors.toList());
     }
 
     private UserEntity findUserOrThrow(Long id) {

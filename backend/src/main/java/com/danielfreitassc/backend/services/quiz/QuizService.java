@@ -54,4 +54,9 @@ public class QuizService {
         if(quiz.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Quiz não encontrado!");
         return quiz.get();
     }
+
+    public QuizEntity createAndReturnEntity(QuizRequestDto quizRequestDto) {
+        QuizEntity quizEntity = quizMapper.toEntity(quizRequestDto);
+        return quizRepository.save(quizEntity);
+    }
 }

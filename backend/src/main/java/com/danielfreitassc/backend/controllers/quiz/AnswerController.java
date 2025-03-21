@@ -1,5 +1,7 @@
 package com.danielfreitassc.backend.controllers.quiz;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.danielfreitassc.backend.dtos.answer.AnswerRequestDto;
+import com.danielfreitassc.backend.dtos.answer.ScoreboardResponseDto;
+import com.danielfreitassc.backend.dtos.common.MessageResponseDto;
 import com.danielfreitassc.backend.dtos.result.ResultResponseDto;
 import com.danielfreitassc.backend.services.answer.AnswerService;
 
@@ -21,17 +25,22 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/answers")
-public class AnserController {
+public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultResponseDto saveAnswer(@RequestBody @Valid AnswerRequestDto answerRequestDto) {
+    public MessageResponseDto saveAnswer(@RequestBody @Valid AnswerRequestDto answerRequestDto) {
         return answerService.saveAnswer(answerRequestDto);
     }
 
     @GetMapping("/{id}")
     public Page<ResultResponseDto> getAnswer(Pageable pageable,@PathVariable Long id) {
         return answerService.getAnswer(pageable, id);
+    }
+
+    @GetMapping
+    public List<ScoreboardResponseDto> getScoreboard() {
+        return answerService.getScoreboard();
     }
 }

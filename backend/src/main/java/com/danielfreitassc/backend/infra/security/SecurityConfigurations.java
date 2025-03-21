@@ -57,6 +57,9 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.PUT,"/alternatives/{id}").hasAnyRole("ADMIN","USER")
                 .requestMatchers(HttpMethod.DELETE,"/alternatives/{id}").hasAnyRole("ADMIN","USER")
 
+                .requestMatchers(HttpMethod.POST,"/full-quizzes").hasAnyRole("ADMIN","USER")
+                .requestMatchers(HttpMethod.GET,"/full-quizzes/{id}").hasAnyRole("ADMIN","USER")
+
                 .requestMatchers(HttpMethod.POST,"/answers").hasAnyRole("ADMIN","USER")
                 .requestMatchers(HttpMethod.GET,"/answers").hasAnyRole("ADMIN","USER")
                 .requestMatchers(HttpMethod.GET,"/answers/{id}").hasAnyRole("ADMIN","USER")

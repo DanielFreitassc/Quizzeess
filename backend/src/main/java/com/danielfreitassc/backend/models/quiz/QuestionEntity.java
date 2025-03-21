@@ -1,5 +1,7 @@
 package com.danielfreitassc.backend.models.quiz;
 
+import java.sql.Timestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,4 +31,5 @@ public class QuestionEntity {
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)
     private QuizEntity quizEntity;
+    private Timestamp timer = new Timestamp(0);
 }

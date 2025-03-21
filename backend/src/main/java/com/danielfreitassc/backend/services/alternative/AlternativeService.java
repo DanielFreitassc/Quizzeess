@@ -1,5 +1,6 @@
 package com.danielfreitassc.backend.services.alternative;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -30,11 +31,7 @@ public class AlternativeService {
         findQuestionOrThrow(alternativeRequestDto.questionId());
         Character alternativeLetter = alternativeRequestDto.alternativeLetter();
         Long questionId = alternativeRequestDto.questionId();
-
-        // Verifica se já existe uma alternativa com a mesma letra para a mesma pergunta
-        if (alternativeRepository.existsByAlternativeLetterAndQuestionEntity_Id(alternativeLetter, questionId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Alternativa já cadastrada para essa pergunta!");
-        }
+        existsByAlternativeLetterAndQuestionId(alternativeLetter, questionId);
 
         alternativeRepository.save(alternativeMapper.toEntity(alternativeRequestDto));
         return new MessageResponseDto("Alternativa criada!");
@@ -60,6 +57,17 @@ public class AlternativeService {
         return new MessageResponseDto("Alternativa removida");
     }
 
+    public List<AlternativeResponseDto> getAlternativesByQuestionId(Long questionId) {
+        return alternativeRepository.findByQuestionEntity_Id(questionId)
+            .stream()
+            .map(alternativeMapper::toDto)
+            .toList();
+    }
+    
+    private boolean existsByAlternativeLetterAndQuestionId(Character alternativeLetter, Long questionId) {
+        return alternativeRepository.existsByAlternativeLetterAndQuestionEntity_Id(alternativeLetter, questionId);
+    }
+
     private AlternativeEntity findAlternativeOrThrow(Long id) {
         Optional<AlternativeEntity> alternative = alternativeRepository.findById(id);
         if(alternative.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhum alternativa encontra");
@@ -71,4 +79,5 @@ public class AlternativeService {
         if(question.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Nenhuma questão encontrada!");
         return question.get();
     }
+
 }
